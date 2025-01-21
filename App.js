@@ -1,12 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import { Navigation } from './screens/navigation/Navigation';
-import {ContexProvider } from './context/ContextProvider';
+import {ContextProvider } from './context/ContextProvider';
 export default function App() {
   return (
-    <ContexProvider>
+    <ContextProvider>
       <Navigation />
       {/* <StatusBar style="auto" /> */}
-    </ContexProvider>
+    </ContextProvider>
   );
 }
 

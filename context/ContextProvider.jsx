@@ -1,15 +1,21 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
+import { useColorScheme } from "react-native";
 
-const CreateContext = createContext();
+export const CreateContext = createContext();
 
-export const ContexProvider = ({ children }) => {
+export const ContextProvider = ({ children }) => {
+    console.log("ContexProvider");
     const [expenseList, setExpenseList] = useState([]);
+    const theme = useColorScheme();
+    
+
 
     return (
         <CreateContext.Provider
             value={{
                 expenseList,
-                setExpenseList
+                setExpenseList,
+                theme
             }}>
             {children}
         </CreateContext.Provider>

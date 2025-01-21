@@ -7,12 +7,17 @@ import { FlatList } from "react-native";
 import DateTimePickerAndroid from '@react-native-community/datetimepicker';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import { TouchableHighlight } from 'react-native';
-import { Animated, useColorScheme } from 'react-native';
+import { Animated } from 'react-native';
 import { useRef } from 'react';
+import { useContext } from 'react';
+import { CreateContext } from '../../context/ContextProvider';
+
 
 export const HistoryData = ({ navigation, route }) => {
+    const { expenseList,
+        setExpenseList,
+        theme } = useContext(CreateContext);
 
-    
     const [expenses, setExpenses] = useState([]);
     const [showPrevDate, setShowPrevDate] = useState(false);
     const [showPostDate, setShowPostDate] = useState(false);
@@ -21,25 +26,21 @@ export const HistoryData = ({ navigation, route }) => {
     const currentRoute = useNavigationState((state) => state.routes[state.index]);
     const [filterListed, setFilterListed] = useState([]);
     const [showFilter, setShowFilter] = useState(false);
-    const colorScheme = useColorScheme();
-    const themeContainerStyle = colorScheme === 'dark' ? styles.darkContainer : styles.container;
+
+    const [cost, setCost] = useState(0);
     useEffect(() => {
         if (currentRoute.name === "Historial") {
             getExpepenses();
         }
     }, [currentRoute])
 
-
+    // reset del filtro de fechas
     useEffect(() => {
-      console.log("colorScheme: ", colorScheme);
-        // Verifica si el esquema cambia dinámicamente
-    }, [colorScheme]);
-
-    useEffect(() => {
-        if(prevDate === '' && postDate === '') {
+        if (prevDate === '' && postDate === '') {
             setFilterListed(expenses);
+            setCost(0);
         }
-    },[filterListed, expenses]);
+    }, [filterListed, expenses]);
 
 
     const getExpepenses = () => {
@@ -53,10 +54,6 @@ export const HistoryData = ({ navigation, route }) => {
         return new Date(`${year}-${month}-${day}`);
     };
 
-    // useEffect(() => {
-    //     setShowFilter(!showFilter)
-    // },[showFilter]);
-
     //!IMPORTANTE:
     //tengo un error en el item.date del expense, por eso este filtro, debo corregirlo y eliminar esta funcion para usar solo convertToDate
     const convertToDate2 = (dateString) => {
@@ -64,12 +61,19 @@ export const HistoryData = ({ navigation, route }) => {
         return new Date(`${year}-${day}-${month}`);
     };
 
-    const clearFilters = () =>{
+    const clearFilters = () => {
         setPrevDate('');
         setPostDate('');
         toggleContainer();
     }
 
+    const calculateCost = (expenses) => {
+        let total = 0;
+        expenses.forEach((item) => {
+            total += item.price;
+        })
+        setCost(total);
+    }
 
     useEffect(() => {
         if (prevDate !== '' && postDate !== '') {
@@ -77,8 +81,9 @@ export const HistoryData = ({ navigation, route }) => {
                 const prevDateConverted = new Date(convertToDate(prevDate));
                 const postDateConverted = new Date(convertToDate(postDate));
                 const dateItem = new Date(convertToDate2(item.date));
-                return  dateItem >= prevDateConverted && dateItem <= postDateConverted
+                return dateItem >= prevDateConverted && dateItem <= postDateConverted
             })
+            calculateCost(filter);
             setFilterListed(filter)
         } else {
             setFilterListed(expenses)
@@ -124,11 +129,11 @@ export const HistoryData = ({ navigation, route }) => {
             // Animación para ocultar
             Animated.timing(animation, {
                 toValue: 0, // Altura final del contenedor
-                duration: 300, 
+                duration: 300,
                 useNativeDriver: false,
             }).start(() => setShowFilter(false));
         } else {
-            setShowFilter(true); 
+            setShowFilter(true);
             Animated.timing(animation, {
                 toValue: 150,
                 duration: 300,
@@ -140,22 +145,21 @@ export const HistoryData = ({ navigation, route }) => {
 
 
     return (
-        <View style={[themeContainerStyle]}>
-            <Text>{colorScheme}</Text>
+        <View style={theme === 'dark' ? styles.darkContainer : styles.container}>
             {showFilter && (
-                <Animated.View style={[styles.filtersContainer, {height:animation}]}>
-                    <TouchableHighlight style={styles.ButtonShowFilter} onPress={handlePrevDate}>
+                <Animated.View style={[theme === "dark" ? styles.filtersContainerDark : styles.filtersContainer, { height: animation }]}>
+                    <TouchableHighlight style={theme === "dark" ? styles.ButtonShowFilterDark : styles.ButtonShowFilter} onPress={handlePrevDate}>
                         <View>
-                            <Text style={styles.showFilterFont}>{  prevDate? `Fecha inicial: ${prevDate}` : "Fecha inicial"}</Text>
+                            <Text style={theme === "dark" ? styles.showFilterFontDark : styles.showFilterFont}>{prevDate ? `Fecha inicial: ${prevDate}` : "Fecha inicial"}</Text>
                             {showPrevDate && (
                                 <RNDateTimePicker value={new Date()} display='calendar' onChange={handleClosePrevDate} />
                             )
                             }
                         </View>
                     </TouchableHighlight>
-                    <TouchableHighlight style={styles.ButtonShowFilter} onPress={handlePostDate}>
+                    <TouchableHighlight style={theme === "dark" ? styles.ButtonShowFilterDark : styles.ButtonShowFilter} onPress={handlePostDate}>
                         <View>
-                            <Text style={styles.showFilterFont}>{postDate ? `Fecha final: ${postDate}` : "Fecha final"}</Text>
+                            <Text style={theme === "dark" ? styles.showFilterFontDark : styles.showFilterFont}>{postDate ? `Fecha final: ${postDate}` : "Fecha final"}</Text>
                             {
                                 showPostDate && (
                                     <RNDateTimePicker value={new Date()} display='calendar' onChange={handleClosePostDate} />
@@ -163,15 +167,16 @@ export const HistoryData = ({ navigation, route }) => {
                             }
                         </View>
                     </TouchableHighlight>
-                    {/* //!RESET */}
-                    <TouchableHighlight style={[styles.ButtonShowFilter,{backgroundColor:"#D3D3D3"}]} onPress={clearFilters}>
+                    <TouchableHighlight style={[styles.ButtonShowFilter]} onPress={clearFilters}>
                         <Text style={[styles.showFilterFont]}>Limpiar filtros</Text>
                     </TouchableHighlight>
                 </Animated.View>
             )}
-            <TouchableHighlight style={styles.ButtonShowFilter} onPress={toggleContainer} >
-                <Text style={styles.showFilterFont}>Filtros</Text>
+
+            <TouchableHighlight style={theme === "dark" ? styles.ButtonShowFilterDark : styles.ButtonShowFilter} onPress={toggleContainer} >
+                <Text style={theme === "dark" ? styles.showFilterFontDark : styles.showFilterFont}>Filtros</Text>
             </TouchableHighlight>
+            {cost > 0 && <Text style={{ textAlign: 'right', width: "90%", fontSize: 20 }}>{`Costo: ${cost} `}</Text>}
             {expenses.length === 0 ?
                 <Text>No hay datos</Text>
                 :
@@ -188,20 +193,29 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingTop: 10,
         alignItems: 'center',
-        backgroundColor: '#f6f6f6',
+        backgroundColor: 'white',
         gap: 15
     },
     darkContainer: {
         flex: 1,
         paddingTop: 10,
         alignItems: 'center',
-        backgroundColor: 'red',
+        backgroundColor: 'black',
         gap: 15
     },
     filtersContainer: {
         boxShadow: '0px 1px 4px 0px rgba(0,0,0,0.25)',
         width: "90%",
-        
+
+        overflow: 'hidden',
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'space-around',
+    },
+    filtersContainerDark: {
+        borderWidth: 1,
+        width: "90%",
+        borderColor: "white",
         overflow: 'hidden',
         borderRadius: 10,
         alignItems: 'center',
@@ -212,9 +226,31 @@ const styles = StyleSheet.create({
         height: 30,
         boxShadow: '0px 1px 4px 0px rgba(0,0,0,0.25)',
         borderRadius: 10,
+        backgroundColor: "white"
+    },
+    ButtonShowFilterDark: {
+        width: "80%",
+        height: 30,
+        boxShadow: '0px 1px 4px 0px rgba(0,0,0,0.25)',
+        borderRadius: 10,
+        backgroundColor: "white"
+    },
+    ButtonShowFilterDark: {
+        width: "80%",
+        height: 30,
+        borderWidth: 1,
+        borderColor: "white",
+        borderRadius: 10,
+        backgroundColor: "white"
     },
     showFilterFont: {
         fontSize: 20,
         textAlign: 'center'
+    },
+    showFilterFontDark: {
+        fontSize: 20,
+        textAlign: 'center',
+        color: "black",
+
     }
 })
