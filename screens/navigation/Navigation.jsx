@@ -9,10 +9,12 @@ import { CreateContext } from "../../context/ContextProvider";
 import { useContext } from "react";
 import { Settings } from "../tabGroup/settings";
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 const BottonBar = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
-
 const TabGroup = () => {
+
+    const insets = useSafeAreaInsets();
   const { theme } = useContext(CreateContext);
 
   return (
@@ -73,6 +75,7 @@ const StackGroup = () => {
         headerStyle: {
           backgroundColor: theme.primary,
         },
+        navigationBarColor: theme.primary,
         headerTintColor: theme === "light" ? "black" : "white",
       }}
     >
