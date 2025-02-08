@@ -28,6 +28,7 @@ const openDatabase = async () => {
 
 // Crear la base de datos e insertar datos
 export const insertExpense = async (item) => {
+  console.log("insert")
   try {
     const { title ="", description="", date="", category="", price=0, picture="" } = item;
     const db = await openDatabase();  

@@ -1,3 +1,4 @@
+import React from "react"
 import { StyleSheet, Image, View, Text, Pressable, Dimensions } from 'react-native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 const { width, height } = Dimensions.get('window');
@@ -17,7 +18,7 @@ interface infoCard {
 
 export const CardData = (props: infoCard) => {
     const {theme} = useContext(CreateContext);
-    const navigation = useNavigation();
+    const navigation: any = useNavigation();
     const [colorTag, setColorTag] = useState<string>('');
 
     const changeColorTag = () => {
@@ -43,14 +44,14 @@ export const CardData = (props: infoCard) => {
     }
 
     return (
-        <Pressable onPress={ handleUpdatePage} style={theme === "dark" ? styles.containerDark : styles.container}>
-            {props.picture ? (<Image style={styles.image} source={{ uri: `data:image/jpg;base64,${props.picture}` }} />) : (<FontAwesome6 name="file-invoice-dollar" size={90} color= {theme ==="dark"?"white":"black"} />)}
+        <Pressable onPress={ handleUpdatePage} style={[styles.container,{backgroundColor:theme.primary}]}>
+            {props.picture ? (<Image style={styles.image} source={{ uri: `data:image/jpg;base64,${props.picture}` }} />) : (<FontAwesome6  name="file-invoice-dollar" size={90} color={theme.name ==="dark"? "white" : "black"} />)}
             <View style={styles.cardInfo}>
                 <View style={styles.infoTagContainer}>
-                    <Text style={[styles.title, {color : theme === "dark"? "white": "dark"}]}>{props.title}</Text>
-                    <Text style= {{color : theme === "dark"? "white": "dark"}}>{`costo: $${props.price}`}</Text>
-                    <Text style= {{color : theme === "dark"? "white": "dark"}}>{`fecha: ${props.date}`}</Text>
-                    <Text style= {{color : theme === "dark"? "white": "dark"}}>{`categoria: ${props.category}`}</Text>
+                    <Text style={[styles.title, {color : theme.color}]}>{props.title}</Text>
+                    <Text style= {{color : theme.color}}>{`costo: $${props.price}`}</Text>
+                    <Text style= {{color : theme.color}}>{`fecha: ${props.date}`}</Text>
+                    <Text style= {{color : theme.color}}>{`categoria: ${props.category}`}</Text>
                 </View>
                 {/* ETIQUETA DE COLOR DE CATEGORIA */}
                 <View style={[styles.tag, { backgroundColor: changeColorTag() }]}></View>
@@ -59,23 +60,12 @@ export const CardData = (props: infoCard) => {
     )
 }
 
-const styles = StyleSheet.create({
+const styles :any = StyleSheet.create({
     container: {
         height: 100,
         width: width * 0.9,
         borderRadius: 10,
         boxShadow: '0px 1px 4px 0px rgba(0,0,0,0.25)',
-        flexDirection: 'row',
-        gap: 10,
-        alignItems: 'center',
-        marginTop: 15,
-    },
-    containerDark: {
-        height: 100,
-        width: width * 0.9,
-        borderRadius: 10,
-        borderWidth: .1,
-        borderColor: 'white',
         flexDirection: 'row',
         gap: 10,
         alignItems: 'center',

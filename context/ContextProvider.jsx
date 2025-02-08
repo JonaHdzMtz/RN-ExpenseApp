@@ -1,21 +1,24 @@
 import { createContext, useEffect, useState } from "react";
 import { useColorScheme } from "react-native";
-
+import {darkTheme, lightTheme} from "../theme/Theme"
 export const CreateContext = createContext();
 
 export const ContextProvider = ({ children }) => {
-    console.log("ContexProvider");
     const [expenseList, setExpenseList] = useState([]);
-    const theme = useColorScheme();
-    
+    const apparence = useColorScheme();
+    const [theme, setTheme] = useState(apparence ==="dark"? darkTheme : lightTheme );
 
-
+    useEffect(()=>{
+        setTheme(apparence ==="dark"? darkTheme : lightTheme )
+    },[apparence])
+    console.log("thema "+ theme);
     return (
         <CreateContext.Provider
             value={{
+                theme,
                 expenseList,
                 setExpenseList,
-                theme
+                
             }}>
             {children}
         </CreateContext.Provider>
