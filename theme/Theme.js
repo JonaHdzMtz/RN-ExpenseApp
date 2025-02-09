@@ -1,17 +1,19 @@
+//backgrpundolor: fondo, color: texto, primary color: cards,etc, secondary: botones
+
 export const lightTheme = {
   name: "light",
-  backgroundColor: "#e8eaf6",
-  color: "#333333",
-  primary: "#c5cae9",
-  secondary: "#9fa8da",
+  backgroundColor: "#ede7f6",
+  color: "#111111",
+  primary: "#d1c4e9",
+  secondary: "#b39ddb",
 };
 
 export const darkTheme = {
   name: "dark",
-  backgroundColor: "#19253e",
+  backgroundColor: "#232323",
   color: "#f1f1f1",
-  primary: "#140f07",
-  secondary: "#475d9d",
+  primary: "#353535",
+  secondary: "#464646",
 };
 
 export const darkTheme2 = {

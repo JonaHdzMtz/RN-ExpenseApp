@@ -12,8 +12,9 @@ import { useRef } from "react";
 import { useContext } from "react";
 import { CreateContext } from "../../context/ContextProvider";
 import { Dimensions } from "react-native";
+import { CardDataDetailed } from "../../components/CardDataDetailed";
 export const HistoryData = ({ navigation, route }) => {
-  const { expenseList, setExpenseList, theme } = useContext(CreateContext);
+  const { expenseList, setExpenseList, theme, cardType } = useContext(CreateContext);
   const { width } = Dimensions.get("window");
   const [expenses, setExpenses] = useState([]);
   const [showPrevDate, setShowPrevDate] = useState(false);
@@ -30,6 +31,11 @@ export const HistoryData = ({ navigation, route }) => {
       getExpepenses();
     }
   }, [currentRoute]);
+
+  useEffect(() => {
+
+    console.log("dasdasd " + cardType )
+  }, [cardType]);
 
   // reset del filtro de fechas
   useEffect(() => {
@@ -154,7 +160,7 @@ export const HistoryData = ({ navigation, route }) => {
             onPress={handlePrevDate}
           >
             <View>
-              <Text style={styles.showFilterFont}>
+              <Text style={[styles.showFilterFont,{color:theme.color}]}>
                 {prevDate ? `Fecha inicial: ${prevDate}` : "Fecha inicial"}
               </Text>
               {showPrevDate && (
@@ -174,7 +180,7 @@ export const HistoryData = ({ navigation, route }) => {
             onPress={handlePostDate}
           >
             <View>
-              <Text style={styles.showFilterFont}>
+              <Text style={[styles.showFilterFont,{color:theme.color}]}>
                 {postDate ? `Fecha final: ${postDate}` : "Fecha final"}
               </Text>
               {showPostDate && (
@@ -193,7 +199,7 @@ export const HistoryData = ({ navigation, route }) => {
             ]}
             onPress={clearFilters}
           >
-            <Text style={[styles.showFilterFont]}>Limpiar filtros</Text>
+            <Text style={[styles.showFilterFont,{color:theme.color}]}>Limpiar filtros</Text>
           </TouchableHighlight>
         </Animated.View>
       )}
@@ -202,7 +208,7 @@ export const HistoryData = ({ navigation, route }) => {
         style={[styles.ButtonShowFilter, { backgroundColor: theme.secondary }]}
         onPress={toggleContainer}
       >
-        <Text style={styles.showFilterFont}>Filtros</Text>
+        <Text style={[styles.showFilterFont,{color:theme.color}]}>Filtros</Text>
       </TouchableHighlight>
       {cost > 0 && (
         <Text
@@ -214,15 +220,16 @@ export const HistoryData = ({ navigation, route }) => {
             backgroundColor: theme.primary,
             paddingEnd: 10,
           }}
-        >{`Costo: ${cost} `}</Text>
+        >{`Costo: $${cost} `}</Text>
       )}
       {expenses.length === 0 ? (
         <Text>No hay datos</Text>
       ) : (
         <FlatList
           data={filterListed}
-          renderItem={({ item }) => <CardData {...item} />}
+          renderItem={({ item }) => cardType === "boxCard"? <CardDataDetailed {...item} type={1}  /> : <CardData {...item} type={1} />}
           keyExtractor={(item) => item.idExpense}
+          
         />
       )}
     </View>
@@ -242,8 +249,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     alignItems: "center",
     justifyContent: "space-around",
-    borderStyle: "dashed",
-    borderBottomWidth: 1,
+   
     paddingBottom: 10,
   },
   ButtonShowFilter: {

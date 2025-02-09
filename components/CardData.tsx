@@ -12,7 +12,7 @@ interface infoCard {
     price: number,
     date: string,
     picture?: string,
-    category: string
+    category: string,
 }
 
 
@@ -88,7 +88,6 @@ const styles :any = StyleSheet.create({
     },
     price: {
         fontSize: 15,
-        color: 'red'
     },
     infoTagContainer: {
         width: "95%",
